@@ -23,6 +23,8 @@ function main() {
     pauseBtn.addEventListener("click", pauseHandler, { once: true });
     restBtn.addEventListener("click", restHandler, { once: true });
   });
+  // TODO: add rest timer
+  // TODO: progress bar
 }
 
 function changeButton() {
