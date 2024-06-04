@@ -1,0 +1,132 @@
+*,
+::after,
+::before {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./fonts/inter-v13-latin-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  src: url("./fonts/inter-v13-latin-700.woff2") format("woff2");
+}
+
+:root {
+  --clr-primary: #eff1f5;
+  --clr-secondary: #e64553;
+  --clr-tertiary: #40a02b;
+  --font-family: "Inter", sans-serif;
+}
+
+/* basic style */
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-family);
+}
+
+button {
+  border: none;
+  box-shadow: none;
+  background-color: white;
+}
+
+/* Reusable class */
+
+.container {
+  width: min(80%, 960px);
+  margin-inline: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100dvh;
+  gap: 1rem;
+}
+
+.invisible {
+  display: none;
+}
+
+/* Style */
+
+.timer-top {
+  border-radius: 8px;
+  padding: 2rem;
+  background-color: var(--clr-secondary);
+}
+
+.timer-time {
+  padding: 1rem 2rem;
+  background-color: var(--clr-primary);
+  font-size: 5rem;
+}
+
+.btn-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.start-btn,
+.pause-btn,
+.rest-btn {
+  padding: 0.5em 2em;
+  margin-block-start: 1rem;
+}
+
+.timer-bottom {
+  border-radius: 8px;
+  margin-block-start: 1rem;
+  padding: 2rem;
+  background-color: var(--clr-secondary);
+}
+
+.text {
+  background-color: var(--clr-primary);
+  padding: 0.5em 1em;
+  text-align: center;
+}
+
+.goals-list {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-start: 1rem;
+}
+
+.list-item button {
+  padding: 0.5em 1em;
+}
+
+/* bar */
+
+.progress-bar {
+  background: linear-gradient(var(--clr-tertiary), var(--clr-secondary));
+  height: 500px;
+  width: 24px;
+  border: 1px solid black;
+}
+
+.progress-bar::after {
+  content: "";
+  background-color: var(--clr-primary);
+  display: block;
+  height: 500px;
+  transform: scaleY(0.99);
+  transform-origin: top center;
+}
