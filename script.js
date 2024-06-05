@@ -4,10 +4,13 @@ function main() {
   const pauseBtn = document.querySelector(".pause-btn");
   const restBtn = document.querySelector(".rest-btn");
   let Time = {
-    second: 0,
+    studySecond: 0,
+    restSecond: 0,
   };
+  let id = 0;
   startBtn.addEventListener("click", () => {
-    let id = stopwatch(time, Time);
+    clearInterval(id);
+    id = stopwatch(time, Time);
     changeButton();
     function pauseHandler() {
       clearInterval(id);
@@ -15,8 +18,10 @@ function main() {
       restBtn.removeEventListener("click", restHandler);
     }
     function restHandler() {
-      Time.second = 0;
+      Time.restSecond = Math.floor(Time.studySecond / 5);
+      Time.studySecond = 0;
       clearInterval(id);
+      id = reverseStopwatch(time, Time);
       changeButton();
       pauseBtn.removeEventListener("click", pauseHandler);
     }
@@ -36,9 +41,23 @@ function changeButton() {
   restBtn.classList.toggle("invisible");
 }
 function stopwatch(timer, Time) {
+  timer.innerText = prettify(Time.studySecond);
   let id = setInterval(() => {
-    Time.second++;
-    timer.innerText = prettify(Time.second);
+    Time.studySecond++;
+    timer.innerText = prettify(Time.studySecond);
+  }, 1000);
+  return id;
+}
+
+function reverseStopwatch(timer, Time) {
+  timer.innerText = prettify(Time.restSecond);
+  let id = setInterval(() => {
+    if (Time.restSecond === 0) {
+      clearInterval(id);
+      return;
+    }
+    Time.restSecond--;
+    timer.innerText = prettify(Time.restSecond);
   }, 1000);
   return id;
 }
