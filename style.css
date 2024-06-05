@@ -82,6 +82,7 @@ button {
 .btn-wrapper {
   display: flex;
   justify-content: center;
+  gap: 1rem;
 }
 
 .start-btn,
@@ -128,7 +129,7 @@ button {
   content: "";
   background-color: var(--clr-primary);
   display: block;
-  height: 500px;
-  transform: scaleY(0.99);
+  height: 498px;
+  transform: scaleY(1);
   transform-origin: top center;
 }
