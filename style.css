@@ -77,6 +77,8 @@ button {
   padding: 1rem 2rem;
   background-color: var(--clr-primary);
   font-size: 5rem;
+  text-align: center;
+  width: 350px;
 }
 
 .btn-wrapper {
@@ -97,19 +99,23 @@ button {
   margin-block-start: 1rem;
   padding: 2rem;
   background-color: var(--clr-secondary);
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.timer-bottom input {
+  /*display: block;*/
+  width: 7rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--clr-primary);
 }
 
 .text {
-  background-color: var(--clr-primary);
-  padding: 0.5em 1em;
-  text-align: center;
-}
-
-.goals-list {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-block-start: 1rem;
+  color: var(--clr-primary);
+  display: block;
+  width: max-content;
 }
 
 .list-item button {
@@ -129,5 +135,5 @@ button {
   background-color: var(--clr-primary);
   height: 498px;
   transform-origin: top center;
-  transition: transform 1s;
+  transition: transform 2s;
 }
