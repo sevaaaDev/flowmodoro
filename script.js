@@ -79,12 +79,11 @@ function stopwatch(timer, Time, bar) {
   let id = setInterval(() => {
     Time.studySecond++;
     timer.innerText = prettify(Time.studySecond);
-    barScale -= factor;
-    if (barScale <= 0) {
-      barScale = 0;
     bar.scale -= bar.studyRate;
     if (bar.scale <= 0) {
       bar.scale = 0;
+      Time.restSecond = Math.floor(Time.studySecond / 5); // TODO: make a function to update this
+      bar.updateBarRate(Time.restSecond, "rest");
     }
     bar.element.style.transform = `scaleY(${bar.scale})`;
   }, 1000);
@@ -101,6 +100,9 @@ function reverseStopwatch(timer, Time, bar) {
     Time.restSecond--;
     timer.innerText = prettify(Time.restSecond);
     bar.scale += bar.restRate;
+    if (bar.scale >= 1 || Time.restSecond === 0) {
+      // TODO: might calc the millisecond
+      bar.scale = 1;
     }
     bar.element.style.transform = `scaleY(${bar.scale})`;
   }, 1000);
