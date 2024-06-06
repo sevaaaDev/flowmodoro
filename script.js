@@ -9,10 +9,10 @@ class ProgressBar {
     this.scale = Math.max(1 - this.studyRate * second, 0);
     this.element.style.transform = `scaleY(${this.scale})`;
   }
-  updateBarRate(timeGoalSecond, mode) {
+  updateBarRate(timeGoalSecond, rest, mode) {
     if (mode === undefined) {
       this.studyRate = 1 / timeGoalSecond;
-      this.restRate = 1 / (timeGoalSecond / 5);
+      this.restRate = 1 / (timeGoalSecond / rest);
     }
     switch (mode) {
       case "rest":
@@ -24,6 +24,14 @@ class ProgressBar {
     }
   }
 }
+
+class Settings {
+  constructor(timeGoal, restPercent) {
+    this.timeGoal = timeGoal;
+    this.rest = 100 / restPercent;
+  }
+}
+
 function main() {
   const time = document.querySelector(".timer-time");
   const startBtn = document.querySelector(".start-btn");
@@ -31,17 +39,19 @@ function main() {
   const restBtn = document.querySelector(".rest-btn");
   const progressBar = document.querySelector(".progress-bar-2");
   const bar = new ProgressBar(progressBar);
+  const inputRest = document.querySelector("#rest-percent");
+  const inputGoals = document.querySelector("#time-goal");
+  const settings = new Settings(20, 20);
   let Time = {
     studySecond: 0,
     restSecond: 0,
   };
   let id = 0;
-  let timeGoalSecond = 20;
   startBtn.addEventListener("click", () => {
-    bar.updateBarRate(timeGoalSecond);
+    bar.updateBarRate(settings.timeGoal, settings.rest);
     bar.updateBar(Time.studySecond);
     clearInterval(id);
-    id = stopwatch(time, Time, bar);
+    id = stopwatch(time, Time, bar, settings.rest);
     changeButton();
     function pauseHandler() {
       clearInterval(id);
@@ -49,10 +59,10 @@ function main() {
       restBtn.removeEventListener("click", restHandler);
     }
     function restHandler() {
-      Time.restSecond = Math.floor(Time.studySecond / 5);
+      Time.restSecond = Math.floor(Time.studySecond / settings.rest);
       Time.studySecond = 0;
       clearInterval(id);
-      id = reverseStopwatch(time, Time, bar);
+      id = reverseStopwatch(time, Time, bar, settings.rest);
       changeButton();
       pauseBtn.removeEventListener("click", pauseHandler);
     }
@@ -60,9 +70,9 @@ function main() {
     restBtn.addEventListener("click", restHandler, { once: true });
   });
 
-  // TODO: progress bar
-  // calc the bar total, and then increment
-  // fix the rest mode
+  inputRest.addEventListener("input", (e) => {
+    settings.rest = +e.data;
+  });
 }
 
 function changeButton() {
@@ -74,15 +84,15 @@ function changeButton() {
   restBtn.classList.toggle("invisible");
 }
 
-function stopwatch(timer, Time, bar) {
-  timer.innerText = prettify(Time.studySecond);
+function stopwatch(timer, Time, bar, rest) {
+  timer.innerText = format(Time.studySecond);
   let id = setInterval(() => {
     Time.studySecond++;
-    timer.innerText = prettify(Time.studySecond);
+    timer.innerText = format(Time.studySecond);
     bar.scale -= bar.studyRate;
     if (bar.scale <= 0) {
       bar.scale = 0;
-      Time.restSecond = Math.floor(Time.studySecond / 5); // TODO: make a function to update this
+      Time.restSecond = Math.floor(Time.studySecond / rest); // TODO: make a function to update this
       bar.updateBarRate(Time.restSecond, "rest");
     }
     bar.element.style.transform = `scaleY(${bar.scale})`;
@@ -91,14 +101,14 @@ function stopwatch(timer, Time, bar) {
 }
 
 function reverseStopwatch(timer, Time, bar) {
-  timer.innerText = prettify(Time.restSecond);
+  timer.innerText = format(Time.restSecond);
   let id = setInterval(() => {
     if (Time.restSecond === 0) {
       clearInterval(id);
       return;
     }
     Time.restSecond--;
-    timer.innerText = prettify(Time.restSecond);
+    timer.innerText = format(Time.restSecond);
     bar.scale += bar.restRate;
     if (bar.scale >= 1 || Time.restSecond === 0) {
       // TODO: might calc the millisecond
@@ -109,7 +119,7 @@ function reverseStopwatch(timer, Time, bar) {
   return id;
 }
 
-function prettify(second) {
+function format(second) {
   let minute = Math.floor(second / 60);
   let hour = Math.floor(minute / 60);
   let newSecond = second % 60;
