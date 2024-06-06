@@ -1,19 +1,47 @@
+class ProgressBar {
+  constructor(barElement) {
+    this.element = barElement;
+    this.scale = 1;
+    this.studyRate = 0;
+    this.restRate = 0;
+  }
+  updateBar(second) {
+    this.scale = Math.max(1 - this.studyRate * second, 0);
+    this.element.style.transform = `scaleY(${this.scale})`;
+  }
+  updateBarRate(timeGoalSecond, mode) {
+    if (mode === undefined) {
+      this.studyRate = 1 / timeGoalSecond;
+      this.restRate = 1 / (timeGoalSecond / 5);
+    }
+    switch (mode) {
+      case "rest":
+        this.restRate = 1 / timeGoalSecond;
+        break;
+      case "study":
+        console.log("hell");
+        this.studyRate = 1 / timeGoalSecond;
+    }
+  }
+}
 function main() {
   const time = document.querySelector(".timer-time");
   const startBtn = document.querySelector(".start-btn");
   const pauseBtn = document.querySelector(".pause-btn");
   const restBtn = document.querySelector(".rest-btn");
   const progressBar = document.querySelector(".progress-bar-2");
+  const bar = new ProgressBar(progressBar);
   let Time = {
     studySecond: 0,
     restSecond: 0,
   };
   let id = 0;
-  let timeGoalSecond = 30;
-  let barIncrementFactor = 1 / timeGoalSecond;
+  let timeGoalSecond = 20;
   startBtn.addEventListener("click", () => {
+    bar.updateBarRate(timeGoalSecond);
+    bar.updateBar(Time.studySecond);
     clearInterval(id);
-    id = stopwatch(time, Time, progressBar, barIncrementFactor);
+    id = stopwatch(time, Time, bar);
     changeButton();
     function pauseHandler() {
       clearInterval(id);
@@ -22,10 +50,9 @@ function main() {
     }
     function restHandler() {
       Time.restSecond = Math.floor(Time.studySecond / 5);
-      let barFactor = 1 / Time.restSecond;
       Time.studySecond = 0;
       clearInterval(id);
-      id = reverseStopwatch(time, Time, progressBar, barFactor);
+      id = reverseStopwatch(time, Time, bar);
       changeButton();
       pauseBtn.removeEventListener("click", pauseHandler);
     }
@@ -46,8 +73,8 @@ function changeButton() {
   pauseBtn.classList.toggle("invisible");
   restBtn.classList.toggle("invisible");
 }
-function stopwatch(timer, Time, bar, factor) {
-  let barScale = 1;
+
+function stopwatch(timer, Time, bar) {
   timer.innerText = prettify(Time.studySecond);
   let id = setInterval(() => {
     Time.studySecond++;
@@ -55,14 +82,16 @@ function stopwatch(timer, Time, bar, factor) {
     barScale -= factor;
     if (barScale <= 0) {
       barScale = 0;
+    bar.scale -= bar.studyRate;
+    if (bar.scale <= 0) {
+      bar.scale = 0;
     }
-    bar.style.transform = `scaleY(${barScale})`;
+    bar.element.style.transform = `scaleY(${bar.scale})`;
   }, 1000);
   return id;
 }
 
-function reverseStopwatch(timer, Time, bar, factor) {
-  let barScale = 0; // WARN: the user might rest when the bar is not full, so this should be the current barScale, not 0
+function reverseStopwatch(timer, Time, bar) {
   timer.innerText = prettify(Time.restSecond);
   let id = setInterval(() => {
     if (Time.restSecond === 0) {
@@ -71,11 +100,9 @@ function reverseStopwatch(timer, Time, bar, factor) {
     }
     Time.restSecond--;
     timer.innerText = prettify(Time.restSecond);
-    barScale += factor;
-    if (barScale >= 1) {
-      barScale = 1;
+    bar.scale += bar.restRate;
     }
-    bar.style.transform = `scaleY(${barScale})`;
+    bar.element.style.transform = `scaleY(${bar.scale})`;
   }, 1000);
   return id;
 }
