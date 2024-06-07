@@ -1,3 +1,4 @@
+// FIX: progress bar stutter
 class ProgressBar {
   constructor(barElement) {
     this.element = barElement;
@@ -9,60 +10,73 @@ class ProgressBar {
     this.scale = Math.max(1 - this.studyRate * second, 0);
     this.element.style.transform = `scaleY(${this.scale})`;
   }
-  updateBarRate(timeGoalSecond, rest, mode) {
-    if (mode === undefined) {
-      this.studyRate = 1 / timeGoalSecond;
-      this.restRate = 1 / (timeGoalSecond / rest);
-    }
-    switch (mode) {
-      case "rest":
-        this.restRate = 1 / timeGoalSecond;
-        break;
-      case "study":
-        console.log("hell");
-        this.studyRate = 1 / timeGoalSecond;
-    }
+  updateStudyBarRate(timeGoalSecond) {
+    this.studyRate = 1 / timeGoalSecond;
+  }
+  updateRestBarRate(restSecond) {
+    this.restRate = (1 - this.scale) / restSecond;
   }
 }
 
 class Settings {
   constructor(timeGoal, restPercent) {
     this.timeGoal = timeGoal;
-    this.rest = 100 / restPercent;
+    this.restPercent = restPercent;
   }
 }
 
+class Time {
+  constructor(settings) {
+    this.settings = settings;
+    this.currentSecond = 0;
+    this.studySecond = 0;
+  }
+
+  get restSecond() {
+    return Math.floor(this.currentSecond / (100 / this.settings.restPercent));
+  }
+
+  set restSecond(val) {
+    return;
+  }
+}
+
+let setsi = new Settings(20, 20);
+let foo = new Time(setsi);
+foo.currentSecond = 20;
+console.log(foo.restSecond);
+
 function main() {
-  const time = document.querySelector(".timer-time");
+  const timer = document.querySelector(".timer-time");
   const startBtn = document.querySelector(".start-btn");
   const pauseBtn = document.querySelector(".pause-btn");
   const restBtn = document.querySelector(".rest-btn");
   const progressBar = document.querySelector(".progress-bar-2");
-  const bar = new ProgressBar(progressBar);
   const inputRest = document.querySelector("#rest-percent");
   const inputGoals = document.querySelector("#time-goal");
+  const bar = new ProgressBar(progressBar);
   const settings = new Settings(20, 20);
-  let Time = {
-    studySecond: 0,
-    restSecond: 0,
-  };
+  const time = new Time(settings);
   let id = 0;
   startBtn.addEventListener("click", () => {
-    bar.updateBarRate(settings.timeGoal, settings.rest);
-    bar.updateBar(Time.studySecond);
+    bar.updateStudyBarRate(settings.timeGoal);
+    time.currentSecond = time.studySecond;
+    bar.updateBar(time.currentSecond);
     clearInterval(id);
-    id = stopwatch(time, Time, bar, settings.rest);
+    id = stopwatch(timer, time, bar, settings.rest);
     changeButton();
     function pauseHandler() {
+      time.studySecond = time.currentSecond;
       clearInterval(id);
       changeButton();
       restBtn.removeEventListener("click", restHandler);
     }
     function restHandler() {
-      Time.restSecond = Math.floor(Time.studySecond / settings.rest);
-      Time.studySecond = 0;
+      bar.updateRestBarRate(time.restSecond);
+      time.currentSecond = time.restSecond;
+      time.studySecond = 0;
       clearInterval(id);
-      id = reverseStopwatch(time, Time, bar, settings.rest);
+      id = reverseStopwatch(timer, time, bar, settings.rest);
       changeButton();
       pauseBtn.removeEventListener("click", pauseHandler);
     }
@@ -84,36 +98,35 @@ function changeButton() {
   restBtn.classList.toggle("invisible");
 }
 
-function stopwatch(timer, Time, bar, rest) {
-  timer.innerText = format(Time.studySecond);
+function stopwatch(timer, time, bar) {
+  timer.innerText = format(time.currentSecond);
   let id = setInterval(() => {
-    Time.studySecond++;
-    timer.innerText = format(Time.studySecond);
+    time.currentSecond++;
+    timer.innerText = format(time.currentSecond);
     bar.scale -= bar.studyRate;
     if (bar.scale <= 0) {
       bar.scale = 0;
-      Time.restSecond = Math.floor(Time.studySecond / rest); // TODO: make a function to update this
-      bar.updateBarRate(Time.restSecond, "rest");
     }
     bar.element.style.transform = `scaleY(${bar.scale})`;
   }, 1000);
   return id;
 }
 
-function reverseStopwatch(timer, Time, bar) {
-  timer.innerText = format(Time.restSecond);
+function reverseStopwatch(timer, time, bar) {
+  timer.innerText = format(time.currentSecond);
   let id = setInterval(() => {
-    if (Time.restSecond === 0) {
+    if (time.currentSecond === 0) {
       clearInterval(id);
       return;
     }
-    Time.restSecond--;
-    timer.innerText = format(Time.restSecond);
+    time.currentSecond--;
+    timer.innerText = format(time.currentSecond);
     bar.scale += bar.restRate;
-    if (bar.scale >= 1 || Time.restSecond === 0) {
-      // TODO: might calc the millisecond
+    if (bar.scale >= 1) {
       bar.scale = 1;
     }
+    console.log(time.currentSecond);
+    console.log(bar.scale);
     bar.element.style.transform = `scaleY(${bar.scale})`;
   }, 1000);
   return id;
