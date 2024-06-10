@@ -39,6 +39,7 @@ ul {
 
 body {
   font-family: var(--font-family);
+  background-color: var(--clr-primary);
 }
 
 button {
