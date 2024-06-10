@@ -1,4 +1,5 @@
-// FIX: progress bar stutter
+// TODO: add hover text
+// TODO: style the timer
 class ProgressBar {
   constructor(barElement) {
     this.element = barElement;
