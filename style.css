@@ -92,6 +92,15 @@ button {
 .rest-btn {
   padding: 0.5em 2em;
   margin-block-start: 1rem;
+  background-color: var(--clr-primary);
+  box-shadow: 0px 5px 0px #ccc;
+}
+
+.start-btn:active,
+.pause-btn:active,
+.rest-btn:active {
+  box-shadow: 0px 0px;
+  transform: translateY(5px);
 }
 
 .timer-bottom {
@@ -133,4 +142,5 @@ button {
 .progress-bar-2 {
   background-color: var(--clr-primary);
   height: 498px;
+  transform-origin: top center;
 }
