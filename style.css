@@ -104,7 +104,6 @@ button {
 }
 
 .timer-bottom input {
-  /*display: block;*/
   width: 7rem;
   padding: 0.5rem;
   border-radius: 8px;
@@ -134,6 +133,4 @@ button {
 .progress-bar-2 {
   background-color: var(--clr-primary);
   height: 498px;
-  transform-origin: top center;
-  transition: transform 2s;
 }
