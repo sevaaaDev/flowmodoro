@@ -55,7 +55,7 @@ function main() {
   const inputRest = document.querySelector("#rest-percent");
   const inputGoals = document.querySelector("#time-goal");
   const bar = new ProgressBar(progressBar);
-  const settings = new Settings(20, 20);
+  const settings = new Settings(+inputGoals.value * 60, +inputRest.value);
   const time = new Time(settings);
   let id = 0;
   startBtn.addEventListener("click", () => {
@@ -85,7 +85,11 @@ function main() {
   });
 
   inputRest.addEventListener("input", (e) => {
-    settings.rest = +e.data;
+    settings.restPercent = +e.data;
+  });
+
+  inputGoals.addEventListener("input", (e) => {
+    settings.timeGoal = +e.data * 60;
   });
 }
 
@@ -125,8 +129,6 @@ function reverseStopwatch(timer, time, bar) {
     if (bar.scale >= 1) {
       bar.scale = 1;
     }
-    console.log(time.currentSecond);
-    console.log(bar.scale);
     bar.element.style.transform = `scaleY(${bar.scale})`;
   }, 1000);
   return id;
